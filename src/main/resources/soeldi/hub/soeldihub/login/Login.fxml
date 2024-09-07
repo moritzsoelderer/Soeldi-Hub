@@ -28,7 +28,9 @@
                 <Button fx:id="loginButton" onAction="#onLoginButtonClicked" styleClass="suggested-button" text="login" />
                 <Button fx:id="signUpButton" onAction="#onSignUpButtonClicked" text="sign-up" />
             </HBox>
-            <Label fx:id="errorLabel"/>
+            <HBox alignment="CENTER_LEFT">
+                <Label fx:id="errorLabel" styleClass="error-label"/>
+            </HBox>
         </VBox>
     </HBox>
     <HBox spacing="20" styleClass="bottom-bar" VBox.vgrow="NEVER">

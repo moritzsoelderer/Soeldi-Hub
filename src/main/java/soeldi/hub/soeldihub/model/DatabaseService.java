@@ -41,7 +41,8 @@ public class DatabaseService {
             pstmt.setString(2, password);
             final ResultSet resultSet = pstmt.executeQuery();
             if(resultSet.next()){
-                return Optional.of(new User(resultSet.getString(1), resultSet.getString(2)));
+                final User foundUser = new User(resultSet.getString("username"), resultSet.getString("password"));
+                return Optional.of(foundUser);
             }
         } catch (SQLException e) {
             return Optional.empty();
