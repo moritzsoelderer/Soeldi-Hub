@@ -1,0 +1,104 @@
+
+* {
+    -fx-background-color: #121212;
+    -fx-text-fill: #eeeeee;
+    -fx-prompt-text-fill: #eeeeee;
+}
+
+.top-bar {
+    -fx-padding: 10 20;
+    -fx-background-color: #121212;
+    -fx-text-fill: #eeeeee;
+}
+
+.top-bar * {
+    -fx-background-color: inherit;
+    -fx-text-fill: inherit;
+}
+
+.bottom-bar {
+    -fx-padding: 10 20;
+    -fx-background-color: #121212;
+    -fx-text-fill: #eeeeee;
+}
+
+.bottom-bar * {
+    -fx-background-color: inherit;
+    -fx-text-fill: inherit;
+}
+
+.h1{
+    -fx-font-size: 24;
+    -fx-font-weight: bold;
+}
+
+.h2{
+    -fx-font-size: 18;
+    -fx-font-weight: bold;
+}
+
+.action-box{
+    -fx-background-color: #121212;
+    -fx-background-radius: 12;
+    -fx-padding: 24 32;
+    -fx-font-size: 14;
+}
+
+.hbox, .vbox{
+    -fx-background-color: inherit;
+}
+
+.action-box .text-field, .action-box .label {
+    -fx-background-color: inherit;
+    -fx-background-radius: inherit;
+}
+
+.center-box {
+    -fx-start-margin: 10;
+    -fx-padding: 32 16;
+    -fx-background-color: #212121;
+}
+
+.text-field {
+    -fx-border-width: 1;
+    -fx-border-color: #cccccc;
+    -fx-border-radius: 10;
+    -fx-padding: 6 8;
+}
+
+.text-field * {
+    -fx-background-color: inherit;
+}
+
+.text-field:focused {
+    -fx-border-color: #454ADE;
+}
+
+.button{
+    -fx-font-weight: bold;
+    -fx-background-color: #565656;
+    -fx-background-radius: 8;
+
+    -fx-border-width: 4;
+    -fx-border-color: transparent;
+    -fx-border-radius: 8;
+
+    -fx-cursor: hand;
+}
+
+.button:focused{
+    -fx-cursor: hand;
+    -fx-border-color: #454ADE;
+}
+
+.button:hover{
+    -fx-opacity: .9;
+}
+
+.suggested-button{
+    -fx-background-color: #454ADE;
+}
+
+.icon{
+    -fx-background-color: white;
+}

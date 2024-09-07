@@ -1,16 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
 
-<?import javafx.scene.control.Button?>
-<VBox alignment="CENTER" spacing="20.0" xmlns:fx="http://javafx.com/fxml"
-      fx:controller="soeldi.hub.soeldihub.SoeldiHubController">
-    <padding>
-        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
-    </padding>
-
-    <Label fx:id="welcomeText"/>
-    <Button text="Hello!" onAction="#onHelloButtonClick"/>
+<VBox alignment="TOP_CENTER" minHeight="1000" minWidth="1200" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/17.0.2-ea" fx:controller="soeldi.hub.soeldihub.SoeldiHubController">
+    <HBox spacing="20" styleClass="top-bar" VBox.vgrow="NEVER">
+        <HBox>
+            <Label style="-fx-padding: 1 2; -fx-background-color: #454ADE; -fx-background-radius: 4 0 0 4;" styleClass="h2" text="Soeldi" />
+            <Label style="-fx-padding: 1 2; -fx-background-color: #565656; -fx-background-radius: 0 4 4 0;" styleClass="h2" text="Hub" />
+        </HBox>
+    </HBox>
+    <HBox alignment="CENTER" styleClass="center-box" VBox.vgrow="ALWAYS">
+        <VBox alignment="CENTER" spacing="15" styleClass="action-box" HBox.hgrow="NEVER" VBox.vgrow="NEVER">
+            <HBox alignment="CENTER_LEFT" styleClass="hbox">
+                <Label fx:id="titleLabel" styleClass="h1" HBox.hgrow="ALWAYS" />
+            </HBox>
+            <VBox prefWidth="200" styleClass="vbox">
+                <Label text="username:" />
+                <TextField fx:id="usernameField" promptText="username" />
+            </VBox>
+            <VBox prefWidth="200" styleClass="vbox">
+                <Label text="password:" />
+                <PasswordField fx:id="passwordField" promptText="password" />
+            </VBox>
+            <HBox fx:id="loginButtonsHBox" spacing="16" styleClass="hbox">
+                <Button fx:id="loginButton" onAction="#onLoginButtonClicked" styleClass="suggested-button" text="login" />
+                <Button fx:id="signUpButton" onAction="#onSignUpButtonClicked" text="sign-up" />
+            </HBox>
+        </VBox>
+    </HBox>
+    <HBox spacing="20" styleClass="bottom-bar" VBox.vgrow="NEVER">
+        <Hyperlink fx:id="socialsHyperLink1" onAction="#visitGithub">
+            <graphic>
+                <ImageView fx:id="socialsImageView1" styleClass="icon"/>
+            </graphic>
+        </Hyperlink>
+    </HBox>
 </VBox>
