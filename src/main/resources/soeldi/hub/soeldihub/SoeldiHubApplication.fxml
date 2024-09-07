@@ -1,40 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.*?>
-<?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
-
-<VBox alignment="TOP_CENTER" minHeight="1000" minWidth="1200" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/17.0.2-ea" fx:controller="soeldi.hub.soeldihub.SoeldiHubController">
-    <HBox spacing="20" styleClass="top-bar" VBox.vgrow="NEVER">
-        <HBox>
-            <Label style="-fx-padding: 1 2; -fx-background-color: #454ADE; -fx-background-radius: 4 0 0 4;" styleClass="h2" text="Soeldi" />
-            <Label style="-fx-padding: 1 2; -fx-background-color: #565656; -fx-background-radius: 0 4 4 0;" styleClass="h2" text="Hub" />
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="soeldi.hub.soeldihub.SoeldiHubApplicationController">
+    <HBox styleClass="top-bar">
+        <HBox HBox.hgrow="ALWAYS">
+            <Label style="-fx-padding: 1 2; -fx-background-color: #454ADE; -fx-background-radius: 4 0 0 4;" styleClass="h1" text="Soeldi" />
+            <Label style="-fx-padding: 1 2; -fx-background-color: #565656; -fx-background-radius: 0 4 4 0;" styleClass="h1" text="Hub" />
+        </HBox>
+        <HBox alignment="CENTER_LEFT">
+            <Label fx:id="welcomeProfileLabel" text="Welcome " styleClass="h2"/>
+            <Label fx:id="usernameProfileLabel" styleClass="h2-accent"/>
         </HBox>
     </HBox>
-    <HBox alignment="CENTER" styleClass="center-box" VBox.vgrow="ALWAYS">
-        <VBox alignment="CENTER" spacing="15" styleClass="action-box" HBox.hgrow="NEVER" VBox.vgrow="NEVER">
-            <HBox alignment="CENTER_LEFT" styleClass="hbox">
-                <Label fx:id="titleLabel" styleClass="h1" HBox.hgrow="ALWAYS" />
-            </HBox>
-            <VBox prefWidth="200" styleClass="vbox">
-                <Label text="username:" />
-                <TextField fx:id="usernameField" promptText="username" />
-            </VBox>
-            <VBox prefWidth="200" styleClass="vbox">
-                <Label text="password:" />
-                <PasswordField fx:id="passwordField" promptText="password" />
-            </VBox>
-            <HBox fx:id="loginButtonsHBox" spacing="16" styleClass="hbox">
-                <Button fx:id="loginButton" onAction="#onLoginButtonClicked" styleClass="suggested-button" text="login" />
-                <Button fx:id="signUpButton" onAction="#onSignUpButtonClicked" text="sign-up" />
+    <HBox VBox.vgrow="ALWAYS">
+        <VBox HBox.hgrow="NEVER" alignment="CENTER_LEFT" styleClass="menu-vbox">
+            <Label text="For You" styleClass="h2"/>
+            <Label text="Followed" styleClass="h2"/>
+            <Label text="Search" styleClass="h2"/>
+        </VBox>
+        <VBox HBox.hgrow="ALWAYS" alignment="TOP_CENTER" styleClass="content-vbox">
+            <HBox alignment="CENTER_LEFT">
+                <Label text="Flows" styleClass="h1"/>
             </HBox>
         </VBox>
-    </HBox>
-    <HBox spacing="20" styleClass="bottom-bar" VBox.vgrow="NEVER">
-        <Hyperlink fx:id="socialsHyperLink1" onAction="#visitGithub">
-            <graphic>
-                <ImageView fx:id="socialsImageView1" styleClass="icon"/>
-            </graphic>
-        </Hyperlink>
+        <VBox fx:id="friendsVbox" alignment="CENTER_LEFT" HBox.hgrow="NEVER" styleClass="friends-vbox">
+            <HBox alignment="CENTER_LEFT">
+                <Label text="Friends" styleClass="h2"/>
+            </HBox>
+        </VBox>
     </HBox>
 </VBox>

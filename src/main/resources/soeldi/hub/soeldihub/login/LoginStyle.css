@@ -2,7 +2,7 @@
 * {
     -fx-background-color: #121212;
     -fx-text-fill: #eeeeee;
-    -fx-prompt-text-fill: #eeeeee;
+    -fx-prompt-text-fill: #999999;
 }
 
 .top-bar {

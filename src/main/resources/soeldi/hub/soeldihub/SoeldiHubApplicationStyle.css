@@ -1,0 +1,69 @@
+* {
+    -fx-background-color: #121212;
+    -fx-text-fill: #eeeeee;
+    -fx-prompt-text-fill: #eeeeee;
+}
+
+.top-bar {
+    -fx-padding: 10 20;
+    -fx-background-color: #121212;
+    -fx-text-fill: #eeeeee;
+}
+
+.top-bar * {
+    -fx-background-color: inherit;
+    -fx-text-fill: inherit;
+}
+
+.friends-vbox {
+    -fx-padding: 20;
+    -fx-background-color: #212121;
+    -fx-background-radius: 20 0 0 20;
+    -fx-pref-width: 220;
+}
+
+.friends-vbox * {
+    -fx-background-color: inherit;
+}
+
+.menu-vbox {
+    -fx-padding: 20;
+    -fx-background-color: #212121;
+    -fx-background-radius: 0 20 20 0;
+    -fx-pref-width: 220;
+}
+.menu-vbox > * {
+    -fx-padding: 12;
+    -fx-background-color: inherit;
+}
+
+.content-vbox {
+    -fx-padding: 20 60;
+}
+
+.content-vbox * {
+    -fx-background-color: inherit;
+}
+
+.h1{
+    -fx-font-size: 24;
+    -fx-font-weight: bold;
+}
+
+.h2{
+    -fx-font-size: 18;
+    -fx-font-weight: bold;
+}
+
+.h3{
+    -fx-font-size: 14;
+}
+
+.h2-accent {
+    -fx-font-size: 18;
+    -fx-font-weight: bold;
+    -fx-text-fill: #454ADE;
+    -fx-background-color: #eeeeee;
+    -fx-background-radius: 6;
+    -fx-padding: 0 6;
+}

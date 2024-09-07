@@ -1,4 +1,4 @@
-package soeldi.hub.soeldihub;
+package soeldi.hub.soeldihub.login;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -9,7 +9,9 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
+import soeldi.hub.soeldihub.SoeldiHubApplication;
 import soeldi.hub.soeldihub.model.DatabaseService;
+import soeldi.hub.soeldihub.model.entities.Session;
 
 import java.awt.*;
 import java.io.IOException;
@@ -17,7 +19,10 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-public class SoeldiHubController {
+import static soeldi.hub.soeldihub.utils.WindowUtils.closeWindow;
+import static soeldi.hub.soeldihub.utils.WindowUtils.openNewWindow;
+
+public class LoginController {
 
     private static final String LOGIN_TEXT = "Login";
     private static final String SIGNUP_TEXT = "Sign-Up";
@@ -41,6 +46,8 @@ public class SoeldiHubController {
     private Button backtoLoginButton;
 
     private boolean isSignUpMode;
+    @FXML
+    private Label errorLabel;
 
     @FXML
     void initialize() {
@@ -48,12 +55,13 @@ public class SoeldiHubController {
         isSignUpMode = false;
         backtoLoginButton = new Button("back");
         backtoLoginButton.setOnAction(e -> exitSignUpMode());
+        errorLabel.setVisible(false);
 
-        loadSocialsIcons();
+        //loadSocialsIcons();
     }
 
     void loadSocialsIcons() {
-        try(final InputStream d = getClass().getResourceAsStream("icons/github-icon.png")){
+        try(final InputStream d = getClass().getResourceAsStream("/../icons/github-icon.png")){
             assert d != null;
             final Image githubIconImage = new Image(d);
             socialsImageView1.setImage(githubIconImage);
@@ -73,10 +81,20 @@ public class SoeldiHubController {
                 .filter(service -> this.validateLoginInput())
                 .flatMap(service -> service.findUser(username, password))
                 .ifPresentOrElse(
-                        user -> titleLabel.setText("Willkommen " + user.username()),
-                        () -> {}
+                        user -> {
+                            titleLabel.setText("Willkommen " + user.username());
+                            Session.initialize(user.username());
+                            openNewWindow(SoeldiHubApplication.class.getResource("SoeldiHubApplication.fxml"),
+                                    "Soeldi Hub",
+                                    SoeldiHubApplication.class.getResource("SoeldiHubApplicationStyle.css")
+                            );
+                            closeWindow(loginButton);
+                        },
+                        () -> {
+                            errorLabel.setText("Could not log in");
+                            errorLabel.setVisible(true);
+                        }
                 );
-        //TODO implement behaviour;
     }
 
     @FXML
@@ -90,9 +108,18 @@ public class SoeldiHubController {
             DatabaseService.getInstance()
                     .filter(service -> this.validateLoginInput())
                     .flatMap(service -> service.createUser(username, password))
+                    .filter(bool -> bool)
                     .ifPresentOrElse(
-                            bool -> titleLabel.setText(username + " wurde " + (bool ? "" : " nicht ") + "angelegt"),
-                            () -> {}
+                            bool -> {Session.initialize(username);
+                                    openNewWindow(SoeldiHubApplication.class.getResource("SoeldiHubApplication.fxml"),
+                                            "Soeldi Hub",
+                                            SoeldiHubApplication.class.getResource("SoeldiHubApplicationStyle.css"));
+                                    closeWindow(signUpButton);
+                                    },
+                            () -> {
+                                errorLabel.setText("Could not create user");
+                                errorLabel.setVisible(true);
+                            }
                     );
         }
     }
@@ -112,10 +139,6 @@ public class SoeldiHubController {
         loginButtonsHBox.getChildren().add(signUpButton);
         signUpButton.getStyleClass().remove("suggested-button");
         this.isSignUpMode = false;
-    }
-
-    private void executeSignUp() {
-        //TODO implement sign up logic
     }
 
     private boolean validateLoginInput() {
