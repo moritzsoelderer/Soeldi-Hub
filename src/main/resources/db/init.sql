@@ -1,7 +1,8 @@
 USE soeldihub;
 
 CREATE TABLE user(
-    username VARCHAR(40),
+    id int auto_increment PRIMARY KEY,
+    username VARCHAR(60) UNIQUE,
     password VARCHAR(40)
 );
 
