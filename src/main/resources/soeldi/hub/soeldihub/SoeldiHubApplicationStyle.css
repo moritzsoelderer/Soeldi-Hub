@@ -6,8 +6,9 @@
 
 .top-bar {
     -fx-padding: 10 20;
-    -fx-background-color: #121212;
+    -fx-background-color: #101010;
     -fx-text-fill: #eeeeee;
+    -fx-background-radius: 0 0 8 8;
 }
 
 .top-bar * {
@@ -17,9 +18,8 @@
 
 .friends-vbox {
     -fx-padding: 20;
-    -fx-background-color: #212121;
-    -fx-background-radius: 20 0 0 20;
     -fx-pref-width: 220;
+    -fx-background-radius: 8 0 0 0;
 }
 
 .friends-vbox * {
@@ -28,9 +28,8 @@
 
 .menu-vbox {
     -fx-padding: 20;
-    -fx-background-color: #212121;
-    -fx-background-radius: 0 20 20 0;
     -fx-pref-width: 220;
+    -fx-background-radius: 0 8 0 0;
 }
 .menu-vbox > * {
     -fx-padding: 12;
@@ -39,6 +38,8 @@
 
 .content-vbox {
     -fx-padding: 20 60;
+    -fx-background-color: #151515;
+    -fx-min-width: 500;
 }
 
 .content-vbox * {
@@ -66,4 +67,32 @@
     -fx-background-color: #eeeeee;
     -fx-background-radius: 6;
     -fx-padding: 0 6;
+}
+
+.recommended {
+    -fx-font-weight: bold;
+    -fx-text-fill: #eeeeee;
+    -fx-background-color: #454ADE;
+    -fx-background-radius: 6 6 6 0;
+    -fx-padding: 0 6;
+}
+
+.menu-vbox-hbox:hover {
+    -fx-background-radius: 8;
+    -fx-background-color: #121212;
+}
+
+.menu-vbox-button{
+    -fx-cursor: hand;
+    -fx-font-size: 18;
+    -fx-font-weight: bold;
+}
+
+.menu-vbox-button:hover{
+    -fx-text-fill: #454ADE;
+    -fx-animated: 2s;
+}
+
+.menu-vbox-button:focused{
+    -fx-text-fill: #454ADE;
 }

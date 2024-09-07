@@ -16,17 +16,24 @@
         </HBox>
     </HBox>
     <HBox VBox.vgrow="ALWAYS">
-        <VBox HBox.hgrow="NEVER" alignment="CENTER_LEFT" styleClass="menu-vbox">
-            <Label text="For You" styleClass="h2"/>
-            <Label text="Followed" styleClass="h2"/>
-            <Label text="Search" styleClass="h2"/>
+        <VBox HBox.hgrow="SOMETIMES" alignment="CENTER_LEFT" styleClass="menu-vbox">
+            <HBox spacing="2" styleClass="menu-vbox-hbox">
+                <Button text="For You" styleClass="menu-vbox-button" onAction="#onActionForYouButton"/>
+                <Label text="recommended" styleClass="recommended"/>
+            </HBox>
+            <HBox spacing="2" styleClass="menu-vbox-hbox">
+                <Button text="Followed" styleClass="menu-vbox-button" onAction="#onActionFollowedButton"/>
+            </HBox>
+            <HBox spacing="2" styleClass="menu-vbox-hbox">
+                <Button text="Search" styleClass="menu-vbox-button" onAction="#onActionSearchButton"/>
+            </HBox>
         </VBox>
-        <VBox HBox.hgrow="ALWAYS" alignment="TOP_CENTER" styleClass="content-vbox">
+        <VBox HBox.hgrow="SOMETIMES" alignment="TOP_CENTER" styleClass="content-vbox">
             <HBox alignment="CENTER_LEFT">
                 <Label text="Flows" styleClass="h1"/>
             </HBox>
         </VBox>
-        <VBox fx:id="friendsVbox" alignment="CENTER_LEFT" HBox.hgrow="NEVER" styleClass="friends-vbox">
+        <VBox fx:id="friendsVbox" HBox.hgrow="NEVER" styleClass="friends-vbox">
             <HBox alignment="CENTER_LEFT">
                 <Label text="Friends" styleClass="h2"/>
             </HBox>

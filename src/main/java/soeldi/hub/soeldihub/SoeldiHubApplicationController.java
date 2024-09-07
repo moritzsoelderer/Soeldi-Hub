@@ -1,5 +1,6 @@
 package soeldi.hub.soeldihub;
 
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
@@ -35,5 +36,17 @@ public class SoeldiHubApplicationController {
         final Label usernameLabel = new Label(user.username());
         final VBox vBox = new VBox(usernameLabel);
         return new HBox(vBox);
+    }
+
+    @FXML
+    private void onActionForYouButton(final ActionEvent actionEvent) {
+    }
+
+    @FXML
+    private void onActionFollowedButton(final ActionEvent actionEvent) {
+    }
+
+    @FXML
+    private void onActionSearchButton(final ActionEvent actionEvent) {
     }
 }

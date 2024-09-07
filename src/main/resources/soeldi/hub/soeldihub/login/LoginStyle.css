@@ -87,7 +87,6 @@
 }
 
 .button:focused{
-    -fx-cursor: hand;
     -fx-border-color: #454ADE;
 }
 
