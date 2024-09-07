@@ -2,12 +2,16 @@ package soeldi.hub.soeldihub;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
+import soeldi.hub.soeldihub.model.DatabaseService;
 
-import java.awt.Desktop;
+import java.awt.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -63,9 +67,16 @@ public class SoeldiHubController {
 
     @FXML
     private void onLoginButtonClicked(final ActionEvent actionEvent) {
-        if(validateLoginInput()) {
-            //TODO implement Login logic
-        }
+        final String username = usernameField.getText();
+        final String password = passwordField.getText();
+        DatabaseService.getInstance()
+                .filter(service -> this.validateLoginInput())
+                .flatMap(service -> service.findUser(username, password))
+                .ifPresentOrElse(
+                        user -> titleLabel.setText("Willkommen " + user.username()),
+                        () -> {}
+                );
+        //TODO implement behaviour;
     }
 
     @FXML
@@ -74,7 +85,15 @@ public class SoeldiHubController {
             enterSignUpMode();
         }
         else {
-            executeSignUp();
+            final String username = usernameField.getText();
+            final String password = passwordField.getText();
+            DatabaseService.getInstance()
+                    .filter(service -> this.validateLoginInput())
+                    .flatMap(service -> service.createUser(username, password))
+                    .ifPresentOrElse(
+                            bool -> titleLabel.setText(username + " wurde " + (bool ? "" : " nicht ") + "angelegt"),
+                            () -> {}
+                    );
         }
     }
 
