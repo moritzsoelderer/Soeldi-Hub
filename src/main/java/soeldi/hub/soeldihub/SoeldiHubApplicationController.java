@@ -22,8 +22,8 @@ public class SoeldiHubApplicationController {
     @FXML
     void initialize() {
         //TODO replace with real implementation
-        final User soeldiUser = DatabaseService.getInstance().flatMap(service -> service.findUser("soeldi", "soeldispassword")).get();
-        final User sophieUser = DatabaseService.getInstance().flatMap(service -> service.findUser("sophie", "sophiespassword")).get();
+        final User soeldiUser = DatabaseService.getInstance().findUser("soeldi", "soeldispassword").get();
+        final User sophieUser = DatabaseService.getInstance().findUser("sophie", "sophiespassword").get();
         friendsVbox.getChildren().add(createFriendsNode(soeldiUser));
         friendsVbox.getChildren().add(createFriendsNode(sophieUser));
 
@@ -40,13 +40,16 @@ public class SoeldiHubApplicationController {
 
     @FXML
     private void onActionForYouButton(final ActionEvent actionEvent) {
+        //TODO implement behaviour
     }
 
     @FXML
     private void onActionFollowedButton(final ActionEvent actionEvent) {
+        //TODO implement behaviour
     }
 
     @FXML
     private void onActionSearchButton(final ActionEvent actionEvent) {
+        //TODO implement behaviour
     }
 }
