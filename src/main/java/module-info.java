@@ -3,6 +3,7 @@ module soeldi.hub.soeldihub {
     requires javafx.fxml;
     requires java.desktop;
     requires java.sql;
+    requires javafx.media;
 
 
     opens soeldi.hub.soeldihub to javafx.fxml;

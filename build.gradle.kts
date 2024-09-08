@@ -31,10 +31,11 @@ application {
 
 javafx {
     version = "21"
-    modules("javafx.controls", "javafx.fxml")
+    modules("javafx.controls", "javafx.fxml", "javafx.media")
 }
 
 dependencies {
+    implementation(libs.javafx.media)
     implementation(libs.msyql.connector)
     testImplementation(libs.junit.jupiter)
 }

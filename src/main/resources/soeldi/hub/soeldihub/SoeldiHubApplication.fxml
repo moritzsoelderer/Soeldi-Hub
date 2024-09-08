@@ -16,7 +16,7 @@
         </HBox>
     </HBox>
     <HBox VBox.vgrow="ALWAYS">
-        <VBox HBox.hgrow="SOMETIMES" alignment="CENTER_LEFT" styleClass="menu-vbox">
+        <VBox HBox.hgrow="ALWAYS" alignment="CENTER_LEFT" styleClass="menu-vbox">
             <HBox spacing="2" styleClass="menu-vbox-hbox">
                 <Button text="For You" styleClass="menu-vbox-button" onAction="#onActionForYouButton"/>
                 <Label text="recommended" styleClass="recommended"/>
@@ -28,12 +28,16 @@
                 <Button text="Search" styleClass="menu-vbox-button" onAction="#onActionSearchButton"/>
             </HBox>
         </VBox>
-        <VBox HBox.hgrow="SOMETIMES" alignment="TOP_CENTER" styleClass="content-vbox">
-            <HBox alignment="CENTER_LEFT">
+        <VBox fx:id="contentVbox" HBox.hgrow="ALWAYS" alignment="TOP_CENTER" styleClass="content-vbox" spacing="8">
+            <HBox spacing="2" styleClass="flows-title-hbox">
                 <Label text="Flows" styleClass="h1"/>
+                <Label text="new" styleClass="recommended"/>
             </HBox>
+            <ScrollPane fx:id="flowContainer" fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="NEVER">
+                <VBox fx:id="flowsVbox" spacing="40" alignment="TOP_CENTER"/>
+            </ScrollPane>
         </VBox>
-        <VBox fx:id="friendsVbox" HBox.hgrow="NEVER" styleClass="friends-vbox">
+        <VBox fx:id="friendsVbox" HBox.hgrow="SOMETIMES" styleClass="friends-vbox">
             <HBox alignment="CENTER_LEFT">
                 <Label text="Friends" styleClass="h2"/>
             </HBox>

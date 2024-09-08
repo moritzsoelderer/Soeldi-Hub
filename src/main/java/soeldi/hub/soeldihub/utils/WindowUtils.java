@@ -9,6 +9,8 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Objects;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class WindowUtils {
 
@@ -27,7 +29,7 @@ public class WindowUtils {
             stage.show();
         }
         catch (IOException exception) {
-
+            Logger.getAnonymousLogger().log(Level.SEVERE, "Could not open window: " + exception.getMessage());
         }
     }
 
