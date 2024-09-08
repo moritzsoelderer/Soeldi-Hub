@@ -62,18 +62,6 @@ public class LoginController {
         loadSocialsIcons();
     }
 
-    void loadSocialsIcons() {
-        try(final InputStream d = SoeldiHubApplication.class.getResourceAsStream("icons/github-icon.png")){
-            assert d != null;
-            final Image githubIconImage = new Image(d);
-            socialsImageView1.setImage(githubIconImage);
-            socialsImageView1.setFitHeight(50);
-            socialsImageView1.setFitWidth(50);
-        } catch (IOException ignored) {
-            //do nothing
-        }
-    }
-
 
     @FXML
     private void onLoginButtonClicked(final ActionEvent actionEvent) {
@@ -153,6 +141,18 @@ public class LoginController {
             Desktop.getDesktop().browse(new URI(GITHUB_LINK));
         } catch (IOException | URISyntaxException ex) {
             ex.printStackTrace();
+        }
+    }
+
+    void loadSocialsIcons() {
+        try(final InputStream d = SoeldiHubApplication.class.getResourceAsStream("icons/github-icon.png")){
+            assert d != null;
+            final Image githubIconImage = new Image(d);
+            socialsImageView1.setImage(githubIconImage);
+            socialsImageView1.setFitHeight(50);
+            socialsImageView1.setFitWidth(50);
+        } catch (IOException ignored) {
+            //do nothing
         }
     }
 }

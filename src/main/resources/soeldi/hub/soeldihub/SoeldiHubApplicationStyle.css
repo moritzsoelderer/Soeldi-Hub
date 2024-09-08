@@ -96,3 +96,7 @@
 .menu-vbox-button:focused{
     -fx-text-fill: #454ADE;
 }
+
+.flows-title-hbox {
+    -fx-position-shape: fixed;
+}
