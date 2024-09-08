@@ -1,21 +1,29 @@
 package soeldi.hub.soeldihub.model;
 
+import soeldi.hub.soeldihub.model.entities.Flow;
 import soeldi.hub.soeldihub.model.entities.User;
 
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
+
+/**
+ * Database Repository for db
+ */
 
 public class DatabaseRepository {
 
     private static DatabaseRepository instance;
-    private final static String databaseUser = "my_user";
-    private final static String databasePassword = "my_password";
-    private final static String databaseName = "soeldihub";
-    private final static int databasePort = 3306;
-    private final static String databaseUrl = "jdbc:mysql://localhost:" + databasePort + "/" + databaseName;
+    private static final String databaseUser = "my_user";
+    private static final String databasePassword = "my_password";
+    private static final String databaseName = "soeldihub";
+    private static final int databasePort = 3306;
+    private static final String databaseUrl = "jdbc:mysql://localhost:" + databasePort + "/" + databaseName;
 
     private DatabaseRepository() {
 
@@ -55,6 +63,37 @@ public class DatabaseRepository {
         }
     }
 
+    public Optional<Flow> fetchFlow(final int id) {
+        final String flowQuery = "SELECT * FROM flow WHERE id = ?";
+        try(final PreparedStatement pstmt = DriverManager.getConnection(databaseUrl, databaseUser, databasePassword)
+                .prepareStatement(flowQuery)) {
+            pstmt.setInt(1, id);
+
+            return Optional.of(pstmt.executeQuery())
+                    .filter(DatabaseRepository::nextOrFalse)
+                    .flatMap(DatabaseMapper::mapToFlow);
+        }
+        catch (SQLException e) {
+            return Optional.empty();
+        }
+    }
+
+    /**
+    Returns the latest 25 flows
+     **/
+    public Optional<List<Optional<Flow>>> fetchLatestFlows() {
+        final String flowQuery = "SELECT * FROM flow ORDER BY flow.uploaded_at DESC LIMIT 25" ;
+        try(final PreparedStatement pstmt = DriverManager.getConnection(databaseUrl, databaseUser, databasePassword)
+                .prepareStatement(flowQuery)) {
+
+            return Optional.of(pstmt.executeQuery())
+                    .map(resultSet -> whileHasNextDo(resultSet, DatabaseMapper::mapToFlow));
+        }
+        catch (SQLException e) {
+            return Optional.empty();
+        }
+    }
+
     private static boolean nextOrFalse(final ResultSet resultSet) {
         try{
             return resultSet.next();
@@ -62,5 +101,13 @@ public class DatabaseRepository {
         catch (Exception e) {
             return false;
         }
+    }
+
+    private static <T> List<T> whileHasNextDo(final ResultSet resultSet, Function<ResultSet, T> toDo) {
+        final List<T> list = new ArrayList<>();
+        while(nextOrFalse(resultSet)){
+            list.add(toDo.apply(resultSet));
+        }
+        return list;
     }
 }
