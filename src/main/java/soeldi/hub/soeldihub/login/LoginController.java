@@ -18,7 +18,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Optional;
 
+import static soeldi.hub.soeldihub.model.entities.User.newUser;
 import static soeldi.hub.soeldihub.utils.WindowUtils.closeWindow;
 import static soeldi.hub.soeldihub.utils.WindowUtils.openNewWindow;
 
@@ -57,11 +59,11 @@ public class LoginController {
         backtoLoginButton.setOnAction(e -> exitSignUpMode());
         errorLabel.setVisible(false);
 
-        //loadSocialsIcons();
+        loadSocialsIcons();
     }
 
     void loadSocialsIcons() {
-        try(final InputStream d = getClass().getResourceAsStream("/../icons/github-icon.png")){
+        try(final InputStream d = SoeldiHubApplication.class.getResourceAsStream("icons/github-icon.png")){
             assert d != null;
             final Image githubIconImage = new Image(d);
             socialsImageView1.setImage(githubIconImage);
@@ -77,24 +79,26 @@ public class LoginController {
     private void onLoginButtonClicked(final ActionEvent actionEvent) {
         final String username = usernameField.getText();
         final String password = passwordField.getText();
-        DatabaseService.getInstance()
+        Optional.of(DatabaseService.getInstance())
                 .filter(service -> this.validateLoginInput())
                 .flatMap(service -> service.findUser(username, password))
                 .ifPresentOrElse(
-                        user -> {
-                            titleLabel.setText("Willkommen " + user.username());
-                            Session.initialize(user.username());
-                            openNewWindow(SoeldiHubApplication.class.getResource("SoeldiHubApplication.fxml"),
-                                    "Soeldi Hub",
-                                    SoeldiHubApplication.class.getResource("SoeldiHubApplicationStyle.css")
-                            );
-                            closeWindow(loginButton);
-                        },
+                        user -> proceedWithLogin(user.username()),
                         () -> {
                             errorLabel.setText("Could not log in");
                             errorLabel.setVisible(true);
                         }
                 );
+    }
+
+    private void proceedWithLogin(final String username) {
+        titleLabel.setText("Willkommen " + username);
+        Session.initialize(username);
+        openNewWindow(SoeldiHubApplication.class.getResource("SoeldiHubApplication.fxml"),
+                "Soeldi Hub",
+                SoeldiHubApplication.class.getResource("SoeldiHubApplicationStyle.css")
+        );
+        closeWindow(errorLabel);
     }
 
     @FXML
@@ -105,17 +109,12 @@ public class LoginController {
         else {
             final String username = usernameField.getText();
             final String password = passwordField.getText();
-            DatabaseService.getInstance()
+            Optional.of(DatabaseService.getInstance())
                     .filter(service -> this.validateLoginInput())
-                    .flatMap(service -> service.createUser(username, password))
+                    .flatMap(service -> service.createUser(newUser(username, password)))
                     .filter(bool -> bool)
                     .ifPresentOrElse(
-                            bool -> {Session.initialize(username);
-                                    openNewWindow(SoeldiHubApplication.class.getResource("SoeldiHubApplication.fxml"),
-                                            "Soeldi Hub",
-                                            SoeldiHubApplication.class.getResource("SoeldiHubApplicationStyle.css"));
-                                    closeWindow(signUpButton);
-                                    },
+                            bool -> proceedWithLogin(username),
                             () -> {
                                 errorLabel.setText("Could not create user");
                                 errorLabel.setVisible(true);
