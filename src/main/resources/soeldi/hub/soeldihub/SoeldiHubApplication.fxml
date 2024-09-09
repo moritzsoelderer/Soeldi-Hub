@@ -34,7 +34,7 @@
                 <Label text="new" styleClass="recommended"/>
             </HBox>
             <ScrollPane fx:id="flowContainer" fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="NEVER">
-                <VBox fx:id="flowsVbox" spacing="40" alignment="TOP_CENTER"/>
+                <VBox fx:id="flowsVbox" spacing="56" alignment="TOP_CENTER"/>
             </ScrollPane>
         </VBox>
         <VBox fx:id="friendsVbox" HBox.hgrow="SOMETIMES" styleClass="friends-vbox">

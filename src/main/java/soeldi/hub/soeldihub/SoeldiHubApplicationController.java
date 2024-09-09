@@ -73,29 +73,33 @@ public class SoeldiHubApplicationController {
     }
 
     private StackPane createFlowMediaView(final Flow flow) {
-        final double parentHeightRatio = 0.3;
+        final double parentHeightRatio = 0.75;
+        final double nineToSixteenRatio = 9.0 / 16.0;
 
         final Media media = new Media(flow.source().toString());
         final MediaPlayer mediaPlayer = new MediaPlayer(media);
         mediaPlayer.setCycleCount(MediaPlayer.INDEFINITE);
 
+        final StackPane parentStackPane = new StackPane();
+        parentStackPane.setStyle("-fx-background-radius: 20; -fx-background-color: #212121");
+        parentStackPane.maxWidthProperty()
+                .bind(contentVbox.heightProperty().multiply(parentHeightRatio * nineToSixteenRatio));
+        parentStackPane.maxHeightProperty()
+                .bind(contentVbox.heightProperty().multiply(parentHeightRatio));
+
         final MediaView mediaView = new MediaView(mediaPlayer);
-
-        final StackPane parentVbox = new StackPane(mediaView);
-        parentVbox.setStyle("-fx-background-radius: 20; -fx-background-color: #212121");
-        parentVbox.maxHeightProperty().bind(contentVbox.maxHeightProperty().multiply(parentHeightRatio));
-        parentVbox.maxWidthProperty().bind(contentVbox.widthProperty().multiply(0.55));
-
-        mediaView.fitWidthProperty().bind(parentVbox.maxWidthProperty());
-
+        mediaView.setPreserveRatio(false);
+        mediaView.fitWidthProperty().bind(parentStackPane.maxWidthProperty());
+        mediaView.fitHeightProperty().bind(parentStackPane.maxHeightProperty());
 
         final Rectangle rectangle = new Rectangle();
-        rectangle.heightProperty().bind(parentVbox.heightProperty());
-        rectangle.widthProperty().bind(parentVbox.widthProperty());
-        rectangle.setArcWidth(60);
-        rectangle.setArcHeight(60);
+        rectangle.heightProperty().bind(contentVbox.heightProperty().multiply(parentHeightRatio));
+        rectangle.widthProperty().bind(parentStackPane.widthProperty());
+        rectangle.setArcWidth(40);
+        rectangle.setArcHeight(40);
 
-        mediaView.setClip(rectangle);
+        parentStackPane.setClip(rectangle);
+        parentStackPane.getChildren().add(mediaView);
 
         mediaView.setOnMouseClicked(e -> {
             if(mediaPlayer.getStatus() == MediaPlayer.Status.PLAYING) {
@@ -105,7 +109,7 @@ public class SoeldiHubApplicationController {
                 mediaPlayer.play();
             }
         });
-        return parentVbox;
+        return parentStackPane;
     }
 
     private void fillContentWithLatestFlows() {
@@ -113,7 +117,6 @@ public class SoeldiHubApplicationController {
         if(optFlows.isEmpty()){
             return;
         }
-
         optFlows.get().forEach(
                 optFlow -> optFlow.map(flow -> flowsVbox.getChildren().add(createFlowMediaView(flow)))
         );
