@@ -2,15 +2,16 @@ package soeldi.hub.soeldihub;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
+import javafx.scene.shape.Rectangle;
 import soeldi.hub.soeldihub.model.DatabaseService;
 import soeldi.hub.soeldihub.model.entities.Flow;
 import soeldi.hub.soeldihub.model.entities.Session;
@@ -71,19 +72,30 @@ public class SoeldiHubApplicationController {
         //TODO implement behaviour
     }
 
-    private VBox createFlowMediaView(final Flow flow) {
-        final double parentHeightRatio = 0.7;
+    private StackPane createFlowMediaView(final Flow flow) {
+        final double parentHeightRatio = 0.3;
 
         final Media media = new Media(flow.source().toString());
         final MediaPlayer mediaPlayer = new MediaPlayer(media);
         mediaPlayer.setCycleCount(MediaPlayer.INDEFINITE);
 
         final MediaView mediaView = new MediaView(mediaPlayer);
-        mediaView.fitHeightProperty().bind(contentVbox.heightProperty().multiply(parentHeightRatio));
 
-        final VBox parentVbox = new VBox(mediaView);
-        parentVbox.setAlignment(Pos.TOP_CENTER);
+        final StackPane parentVbox = new StackPane(mediaView);
         parentVbox.setStyle("-fx-background-radius: 20; -fx-background-color: #212121");
+        parentVbox.maxHeightProperty().bind(contentVbox.maxHeightProperty().multiply(parentHeightRatio));
+        parentVbox.maxWidthProperty().bind(contentVbox.widthProperty().multiply(0.55));
+
+        mediaView.fitWidthProperty().bind(parentVbox.maxWidthProperty());
+
+
+        final Rectangle rectangle = new Rectangle();
+        rectangle.heightProperty().bind(parentVbox.heightProperty());
+        rectangle.widthProperty().bind(parentVbox.widthProperty());
+        rectangle.setArcWidth(60);
+        rectangle.setArcHeight(60);
+
+        mediaView.setClip(rectangle);
 
         mediaView.setOnMouseClicked(e -> {
             if(mediaPlayer.getStatus() == MediaPlayer.Status.PLAYING) {
