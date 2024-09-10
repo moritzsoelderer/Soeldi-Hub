@@ -50,4 +50,20 @@ public class DatabaseService {
         return repository.fetchLike(id);
     }
 
+    public Optional<Like> findLike(final int userId, final int flowId) {
+        return repository.fetchLike(userId, flowId);
+    }
+
+    public boolean isLikedBy(final int userId, final int flowId) {
+        return this.findLike(userId, flowId).isPresent();
+    }
+
+    public Optional<Integer> countLikes(final int flowId) {
+        return repository.fetchCountLikes(flowId);
+    }
+
+    public Optional<Boolean> createLike(final int userId, final int flowId) {
+        return repository.insertLike(userId, flowId).map(i -> i == 1);
+    }
+
 }

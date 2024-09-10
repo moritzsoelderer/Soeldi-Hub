@@ -11,7 +11,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Database Repository for db
@@ -65,14 +68,15 @@ public class DatabaseRepository {
     }
 
     public Optional<Flow> fetchFlow(final int id) {
-        return fetchById("flow", id, DatabaseMapper::mapToFlow);
+        final Optional<Integer> likes = fetchCountLikes(id);
+        return fetchById("flow", id, resultSet -> DatabaseMapper.mapToFlow(resultSet, likes));
     }
 
     /**
     Returns the latest 25 flows
      **/
     public Optional<List<Optional<Flow>>> fetchLatestFlows() {
-        final String flowQuery = "SELECT * FROM flow ORDER BY flow.uploaded_at DESC LIMIT 25" ;
+        final String flowQuery = "SELECT * FROM flow LEFT JOIN (SELECT flow_id, COUNT(*) AS count FROM user_likes_flow GROUP BY flow_id) AS likes ON likes.flow_id = flow.id ORDER BY flow.uploaded_at DESC LIMIT 25" ;
         try(final PreparedStatement pstmt = DriverManager.getConnection(databaseUrl, databaseUser, databasePassword)
                 .prepareStatement(flowQuery)) {
 
@@ -86,6 +90,50 @@ public class DatabaseRepository {
 
     public Optional<Like> fetchLike(final int id) {
         return fetchById("user_likes_flow", id, DatabaseMapper::mapToLike);
+    }
+
+    public Optional<Like> fetchLike(final int userId, final int flowId) {
+        final String userQuery = "SELECT * FROM user_likes_flow WHERE user_id = ? AND flow_id = ?;";
+        try(final PreparedStatement pstmt = DriverManager.getConnection(databaseUrl, databaseUser, databasePassword).prepareStatement(userQuery)) {
+            pstmt.setInt(1, userId);
+            pstmt.setInt(2, flowId);
+
+            return Optional.of(pstmt.executeQuery())
+                    .filter(DatabaseRepository::nextOrFalse)
+                    .flatMap(DatabaseMapper::mapToLike);
+        }
+        catch (SQLException e) {
+            return Optional.empty();
+        }
+    }
+
+    public Optional<Integer> fetchCountLikes(final int flowId) {
+        final String flowLikeQuery = "SELECT COUNT(*) AS count FROM user_likes_flow WHERE flow_id = ?" ;
+        try(final PreparedStatement pstmt = DriverManager.getConnection(databaseUrl, databaseUser, databasePassword)
+                .prepareStatement(flowLikeQuery)) {
+            pstmt.setInt(1, flowId);
+
+            return Optional.of(pstmt.executeQuery())
+                    .filter(DatabaseRepository::nextOrFalse)
+                    .flatMap(DatabaseMapper::mapToCount);
+        }
+        catch (SQLException e) {
+            return Optional.empty();
+        }
+    }
+
+    public Optional<Integer> insertLike(final int userId, final int flowId) {
+        final String userQuery = "INSERT INTO user_likes_flow (user_id, flow_id) VALUES(?,?);";
+        try(final PreparedStatement pstmt = DriverManager.getConnection(databaseUrl, databaseUser, databasePassword).prepareStatement(userQuery)){
+            pstmt.setInt(1, userId);
+            pstmt.setInt(2, flowId);
+
+            return Optional.of(pstmt.executeUpdate());
+        } catch (SQLException e) {
+            Logger.getAnonymousLogger().log(Level.SEVERE, e.getMessage());
+            Logger.getAnonymousLogger().log(Level.SEVERE, userId + " : " + flowId);
+            return Optional.empty();
+        }
     }
 
     private <T> Optional<T> fetchById(final String tableName, final int id, final Function<ResultSet, Optional<T>> mappingFunction) {
@@ -114,7 +162,7 @@ public class DatabaseRepository {
         }
     }
 
-    private static <T> List<T> whileHasNextDo(final ResultSet resultSet, Function<ResultSet, T> toDo) {
+    private static <T> List<T> whileHasNextDo(final ResultSet resultSet, final Function<ResultSet, T> toDo) {
         final List<T> list = new ArrayList<>();
         while(nextOrFalse(resultSet)){
             list.add(toDo.apply(resultSet));

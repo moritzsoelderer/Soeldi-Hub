@@ -31,6 +31,25 @@ public class DatabaseMapper {
         }
     }
 
+    public static Optional<Flow> mapToFlow(final ResultSet resultSet, final Optional<Integer> numberOflikes) {
+        try{
+            return Optional.of(
+                    new Flow(
+                            Optional.of(resultSet.getInt("id")),
+                            resultSet.getString("title"),
+                            Optional.of(resultSet.getTimestamp("uploaded_at").toInstant()),
+                            resultSet.getInt("uploaded_by"),
+                            SoeldiHubApplication.class.getResource(
+                                    RELATIVE_PATH_TO_CONTENT + "flows/" + resultSet.getString("source")
+                            ),
+                            numberOflikes
+                    )
+            );
+        } catch (SQLException e) {
+            return Optional.empty();
+        }
+    }
+
     public static Optional<Flow> mapToFlow(final ResultSet resultSet) {
         try{
             return Optional.of(
@@ -41,7 +60,8 @@ public class DatabaseMapper {
                             resultSet.getInt("uploaded_by"),
                             SoeldiHubApplication.class.getResource(
                                     RELATIVE_PATH_TO_CONTENT + "flows/" + resultSet.getString("source")
-                            )
+                                    ),
+                            Optional.of(resultSet.getInt("count"))
                     )
             );
         } catch (SQLException e) {
@@ -59,6 +79,14 @@ public class DatabaseMapper {
                             Optional.of(resultSet.getTimestamp("created_at").toInstant())
                     )
             );
+        } catch (SQLException e) {
+            return Optional.empty();
+        }
+    }
+
+    public static Optional<Integer> mapToCount(final ResultSet resultSet) {
+        try{
+            return Optional.of(resultSet.getInt("count"));
         } catch (SQLException e) {
             return Optional.empty();
         }
