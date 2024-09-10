@@ -1,6 +1,7 @@
 package soeldi.hub.soeldihub.model;
 
 import soeldi.hub.soeldihub.model.entities.Flow;
+import soeldi.hub.soeldihub.model.entities.Like;
 import soeldi.hub.soeldihub.model.entities.User;
 
 import java.util.List;
@@ -43,6 +44,10 @@ public class DatabaseService {
 
     public Optional<List<Optional<Flow>>> findLatestFlows() {
         return repository.fetchLatestFlows();
+    }
+
+    public Optional<Like> findLike(final int id) {
+        return repository.fetchLike(id);
     }
 
 }
