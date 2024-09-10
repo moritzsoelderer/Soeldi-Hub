@@ -2,6 +2,7 @@ package soeldi.hub.soeldihub.model;
 
 import soeldi.hub.soeldihub.SoeldiHubApplication;
 import soeldi.hub.soeldihub.model.entities.Flow;
+import soeldi.hub.soeldihub.model.entities.Like;
 import soeldi.hub.soeldihub.model.entities.User;
 
 import java.sql.ResultSet;
@@ -41,6 +42,21 @@ public class DatabaseMapper {
                             SoeldiHubApplication.class.getResource(
                                     RELATIVE_PATH_TO_CONTENT + "flows/" + resultSet.getString("source")
                             )
+                    )
+            );
+        } catch (SQLException e) {
+            return Optional.empty();
+        }
+    }
+
+    public static Optional<Like> mapToLike(final ResultSet resultSet) {
+        try{
+            return Optional.of(
+                    new Like(
+                            Optional.of(resultSet.getInt("id")),
+                            resultSet.getInt("user_id"),
+                            resultSet.getInt("flow_id"),
+                            Optional.of(resultSet.getTimestamp("created_at").toInstant())
                     )
             );
         } catch (SQLException e) {

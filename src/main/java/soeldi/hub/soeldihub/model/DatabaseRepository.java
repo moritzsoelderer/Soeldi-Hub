@@ -1,6 +1,7 @@
 package soeldi.hub.soeldihub.model;
 
 import soeldi.hub.soeldihub.model.entities.Flow;
+import soeldi.hub.soeldihub.model.entities.Like;
 import soeldi.hub.soeldihub.model.entities.User;
 
 import java.sql.DriverManager;
@@ -64,18 +65,7 @@ public class DatabaseRepository {
     }
 
     public Optional<Flow> fetchFlow(final int id) {
-        final String flowQuery = "SELECT * FROM flow WHERE id = ?";
-        try(final PreparedStatement pstmt = DriverManager.getConnection(databaseUrl, databaseUser, databasePassword)
-                .prepareStatement(flowQuery)) {
-            pstmt.setInt(1, id);
-
-            return Optional.of(pstmt.executeQuery())
-                    .filter(DatabaseRepository::nextOrFalse)
-                    .flatMap(DatabaseMapper::mapToFlow);
-        }
-        catch (SQLException e) {
-            return Optional.empty();
-        }
+        return fetchById("flow", id, DatabaseMapper::mapToFlow);
     }
 
     /**
@@ -88,6 +78,27 @@ public class DatabaseRepository {
 
             return Optional.of(pstmt.executeQuery())
                     .map(resultSet -> whileHasNextDo(resultSet, DatabaseMapper::mapToFlow));
+        }
+        catch (SQLException e) {
+            return Optional.empty();
+        }
+    }
+
+    public Optional<Like> fetchLike(final int id) {
+        return fetchById("user_likes_flow", id, DatabaseMapper::mapToLike);
+    }
+
+    private <T> Optional<T> fetchById(final String tableName, final int id, final Function<ResultSet, Optional<T>> mappingFunction) {
+        final String query = "SELECT * FROM ? WHERE ?.id = ?" ;
+        try(final PreparedStatement pstmt = DriverManager.getConnection(databaseUrl, databaseUser, databasePassword)
+                .prepareStatement(query)) {
+            pstmt.setString(1, tableName);
+            pstmt.setString(1, tableName);
+            pstmt.setInt(3, id);
+
+            return Optional.of(pstmt.executeQuery())
+                    .filter(DatabaseRepository::nextOrFalse)
+                    .flatMap(mappingFunction);
         }
         catch (SQLException e) {
             return Optional.empty();
