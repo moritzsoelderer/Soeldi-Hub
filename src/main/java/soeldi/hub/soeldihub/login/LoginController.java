@@ -71,7 +71,7 @@ public class LoginController {
                 .filter(service -> this.validateLoginInput())
                 .flatMap(service -> service.findUser(username, password))
                 .ifPresentOrElse(
-                        user -> proceedWithLogin(user.username()),
+                        user -> proceedWithLogin(user.id().orElseThrow(), user.username()),
                         () -> {
                             errorLabel.setText("Could not log in");
                             errorLabel.setVisible(true);
@@ -79,9 +79,9 @@ public class LoginController {
                 );
     }
 
-    private void proceedWithLogin(final String username) {
+    private void proceedWithLogin(final int userId, final String username) {
         titleLabel.setText("Willkommen " + username);
-        Session.initialize(username);
+        Session.initialize(userId, username);
         openNewWindow(SoeldiHubApplication.class.getResource("SoeldiHubApplication.fxml"),
                 "Soeldi Hub",
                 SoeldiHubApplication.class.getResource("SoeldiHubApplicationStyle.css")
@@ -97,12 +97,14 @@ public class LoginController {
         else {
             final String username = usernameField.getText();
             final String password = passwordField.getText();
-            Optional.of(DatabaseService.getInstance())
+            final DatabaseService dbService = DatabaseService.getInstance();
+            Optional.of(dbService)
                     .filter(service -> this.validateLoginInput())
                     .flatMap(service -> service.createUser(newUser(username, password)))
                     .filter(bool -> bool)
+                    .flatMap(bool -> dbService.findUser(username, password))
                     .ifPresentOrElse(
-                            bool -> proceedWithLogin(username),
+                            user -> proceedWithLogin(user.id().orElseThrow(), user.username()),
                             () -> {
                                 errorLabel.setText("Could not create user");
                                 errorLabel.setVisible(true);
