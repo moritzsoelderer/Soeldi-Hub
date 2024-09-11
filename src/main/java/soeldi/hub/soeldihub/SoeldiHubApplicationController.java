@@ -3,11 +3,10 @@ package soeldi.hub.soeldihub;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
@@ -17,7 +16,6 @@ import soeldi.hub.soeldihub.model.entities.Flow;
 import soeldi.hub.soeldihub.model.entities.Session;
 import soeldi.hub.soeldihub.model.entities.User;
 
-import java.util.List;
 import java.util.Optional;
 
 public class SoeldiHubApplicationController {
@@ -72,7 +70,7 @@ public class SoeldiHubApplicationController {
         //TODO implement behaviour
     }
 
-    private StackPane createFlowMediaView(final Flow flow) {
+    private static StackPane createFlowMediaView(final Flow flow, final Region parentRegion) {
         final double parentHeightRatio = 0.75;
         final double nineToSixteenRatio = 9.0 / 16.0;
 
@@ -83,9 +81,9 @@ public class SoeldiHubApplicationController {
         final StackPane parentStackPane = new StackPane();
         parentStackPane.setStyle("-fx-background-radius: 20; -fx-background-color: #212121");
         parentStackPane.maxWidthProperty()
-                .bind(contentVbox.heightProperty().multiply(parentHeightRatio * nineToSixteenRatio));
+                .bind(parentRegion.heightProperty().multiply(parentHeightRatio * nineToSixteenRatio));
         parentStackPane.maxHeightProperty()
-                .bind(contentVbox.heightProperty().multiply(parentHeightRatio));
+                .bind(parentRegion.heightProperty().multiply(parentHeightRatio));
 
         final MediaView mediaView = new MediaView(mediaPlayer);
         mediaView.setPreserveRatio(false);
@@ -93,7 +91,7 @@ public class SoeldiHubApplicationController {
         mediaView.fitHeightProperty().bind(parentStackPane.maxHeightProperty());
 
         final Rectangle rectangle = new Rectangle();
-        rectangle.heightProperty().bind(contentVbox.heightProperty().multiply(parentHeightRatio));
+        rectangle.heightProperty().bind(parentRegion.heightProperty().multiply(parentHeightRatio));
         rectangle.widthProperty().bind(parentStackPane.widthProperty());
         rectangle.setArcWidth(40);
         rectangle.setArcHeight(40);
@@ -101,7 +99,21 @@ public class SoeldiHubApplicationController {
         parentStackPane.setClip(rectangle);
         parentStackPane.getChildren().add(mediaView);
 
-        mediaView.setOnMouseClicked(e -> {
+        final int userId =  Session.getInstance().orElseThrow().getUserId();
+        final boolean isLikedByUser = DatabaseService.getInstance().isLikedBy(userId, flow.id().orElseThrow());
+
+        final VBox likeButtonVbox = createLikeButtonVbox(
+                flow.id().orElseThrow(), flow.likes().orElse(0), isLikedByUser
+        );
+
+        final AnchorPane anchorPane = new AnchorPane();
+        anchorPane.setStyle("-fx-background-color: transparent;");
+        parentStackPane.getChildren().add(anchorPane);
+        AnchorPane.setBottomAnchor(likeButtonVbox, 20.0);
+        AnchorPane.setRightAnchor(likeButtonVbox, 20.0);
+        anchorPane.getChildren().add(likeButtonVbox);
+
+        anchorPane.setOnMouseClicked(e -> {
             if(mediaPlayer.getStatus() == MediaPlayer.Status.PLAYING) {
                 mediaPlayer.pause();
             }
@@ -112,13 +124,41 @@ public class SoeldiHubApplicationController {
         return parentStackPane;
     }
 
-    private void fillContentWithLatestFlows() {
-        Optional<List<Optional<Flow>>> optFlows = DatabaseService.getInstance().findLatestFlows();
-        if(optFlows.isEmpty()){
-            return;
+    private static VBox createLikeButtonVbox(final int flowId, final int likes, final boolean isLikedByUser) {
+        final Label label = new Label(String.valueOf(likes));
+        label.getStyleClass().add("like-label");
+
+        final Button button = new Button("like");
+        button.getStyleClass().add("like-button");
+        button.setOnAction(e -> addLikeToFlow(flowId, label, button));
+        if(isLikedByUser) {
+            button.setStyle("-fx-background-color: red");
         }
-        optFlows.get().forEach(
-                optFlow -> optFlow.map(flow -> flowsVbox.getChildren().add(createFlowMediaView(flow)))
+
+        final VBox vBox = new VBox(button, label);
+        vBox.getStyleClass().add("like-vbox");
+
+        return vBox;
+    }
+
+    private static void addLikeToFlow(final int flowId, final Label likeLabel, final Button likeButton) {
+        Optional.of(DatabaseService.getInstance())
+                .flatMap(service -> service.createLike(Session.getInstance().orElseThrow().getUserId(), flowId))
+                .filter(bool -> bool)
+                .ifPresent(
+                        bool -> {
+                            likeLabel.setText(String.valueOf(Integer.parseInt(likeLabel.getText()) + 1));
+                            likeButton.setStyle("-fx-background-color: red;");
+                        }
+                );
+    }
+
+    private void fillContentWithLatestFlows() {
+        DatabaseService.getInstance().findLatestFlows().ifPresent(
+                flows -> flows.forEach(
+                        optFlow -> optFlow.
+                                map(flow -> flowsVbox.getChildren().add(createFlowMediaView(flow, contentVbox)))
+                )
         );
     }
 }

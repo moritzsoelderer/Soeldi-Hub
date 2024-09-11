@@ -100,3 +100,26 @@
 .flows-title-hbox {
     -fx-position-shape: fixed;
 }
+
+.like-vbox {
+    -fx-background-color: transparent;
+    -fx-alignment: top-center;
+    -fx-spacing: 2;
+}
+
+.like-button {
+    -fx-font-weight: bold;
+    -fx-font-size: 14;
+    -fx-cursor: hand;
+    -fx-background-radius: 4;
+}
+
+.like-button:hover {
+    -fx-background-color: #44444444;
+}
+
+.like-label {
+    -fx-font-weight: bold;
+    -fx-font-size: 11;
+    -fx-alignment: center;
+}

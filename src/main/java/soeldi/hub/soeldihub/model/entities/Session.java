@@ -4,21 +4,24 @@ import java.time.Instant;
 import java.util.Optional;
 
 public class Session {
+
+    private final int userId;
     private final String username;
     private final Instant sessionBegin;
     private final Optional<Instant> sessionEnd;
 
     private static Session instance;
 
-    private Session(final String username) {
+    private Session(final int userId, final String username) {
+        this.userId = userId;
         this.username = username;
         this.sessionBegin = Instant.now();
         this.sessionEnd = Optional.empty();
     }
 
-    public static Session initialize(final String username) throws IllegalStateException{
+    public static Session initialize(final int userId, final String username) throws IllegalStateException{
         if(instance == null) {
-            instance = new Session(username);
+            instance = new Session(userId, username);
             return instance;
         }
         else if(!instance.username.equals(username)){
@@ -33,6 +36,9 @@ public class Session {
         return Optional.ofNullable(instance);
     }
 
+    public int getUserId() {
+        return this.userId;
+    }
     public String getUsername() {
         return this.username;
     }
