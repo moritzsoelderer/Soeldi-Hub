@@ -130,8 +130,6 @@ public class DatabaseRepository {
 
             return Optional.of(pstmt.executeUpdate());
         } catch (SQLException e) {
-            Logger.getAnonymousLogger().log(Level.SEVERE, e.getMessage());
-            Logger.getAnonymousLogger().log(Level.SEVERE, userId + " : " + flowId);
             return Optional.empty();
         }
     }
