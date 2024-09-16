@@ -33,8 +33,8 @@
                 <Label text="Flows" styleClass="h1"/>
                 <Label text="new" styleClass="recommended"/>
             </HBox>
-            <ScrollPane fx:id="flowContainer" fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="NEVER">
-                <VBox fx:id="flowsVbox" spacing="56" alignment="TOP_CENTER"/>
+            <ScrollPane fx:id="flowContainer" fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="NEVER" styleClass="flows-scroll-pane">
+                <VBox fx:id="flowsVbox" spacing="56" alignment="TOP_CENTER" styleClass="flows-vbox"/>
             </ScrollPane>
         </VBox>
         <VBox fx:id="friendsVbox" HBox.hgrow="SOMETIMES" styleClass="friends-vbox">
