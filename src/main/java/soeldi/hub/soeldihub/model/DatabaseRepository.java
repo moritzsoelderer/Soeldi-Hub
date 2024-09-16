@@ -56,6 +56,10 @@ public class DatabaseRepository {
         }
     }
 
+    public Optional<User> fetchUser(final int id) {
+        return fetchById("user", id, DatabaseMapper::mapToUser);
+    }
+
     public Optional<Integer> insertUser(final String username, final String password) {
         final String userQuery = "INSERT INTO user (username, password) VALUES(?,?);";
         try(final PreparedStatement pstmt = DriverManager.getConnection(databaseUrl, databaseUser, databasePassword).prepareStatement(userQuery)){
@@ -135,18 +139,17 @@ public class DatabaseRepository {
     }
 
     private <T> Optional<T> fetchById(final String tableName, final int id, final Function<ResultSet, Optional<T>> mappingFunction) {
-        final String query = "SELECT * FROM ? WHERE ?.id = ?" ;
+        final String query = "SELECT * FROM " + tableName + " AS t WHERE t.id = ?" ;
         try(final PreparedStatement pstmt = DriverManager.getConnection(databaseUrl, databaseUser, databasePassword)
                 .prepareStatement(query)) {
-            pstmt.setString(1, tableName);
-            pstmt.setString(1, tableName);
-            pstmt.setInt(3, id);
+            pstmt.setInt(1, id);
 
             return Optional.of(pstmt.executeQuery())
                     .filter(DatabaseRepository::nextOrFalse)
                     .flatMap(mappingFunction);
         }
         catch (SQLException e) {
+            Logger.getAnonymousLogger().log(Level.SEVERE, e.getMessage());
             return Optional.empty();
         }
     }

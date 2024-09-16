@@ -25,6 +25,11 @@ public class DatabaseService {
         return instance;
     }
 
+    public Optional<User> findUser(final int id) {
+        return Optional.of(id)
+                .flatMap(userId -> repository.fetchUser(userId));
+    }
+
     public Optional<User> findUser(final String username, final String password) {
             return Optional.of(username)
                     .flatMap(user -> repository.fetchUser(user, password));
