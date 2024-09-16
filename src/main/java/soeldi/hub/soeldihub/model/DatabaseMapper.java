@@ -39,6 +39,7 @@ public class DatabaseMapper {
                             resultSet.getString("title"),
                             Optional.of(resultSet.getTimestamp("uploaded_at").toInstant()),
                             resultSet.getInt("uploaded_by"),
+                            resultSet.getString("caption"),
                             SoeldiHubApplication.class.getResource(
                                     RELATIVE_PATH_TO_CONTENT + "flows/" + resultSet.getString("source")
                             ),
@@ -58,6 +59,7 @@ public class DatabaseMapper {
                             resultSet.getString("title"),
                             Optional.of(resultSet.getTimestamp("uploaded_at").toInstant()),
                             resultSet.getInt("uploaded_by"),
+                            resultSet.getString("caption"),
                             SoeldiHubApplication.class.getResource(
                                     RELATIVE_PATH_TO_CONTENT + "flows/" + resultSet.getString("source")
                                     ),
