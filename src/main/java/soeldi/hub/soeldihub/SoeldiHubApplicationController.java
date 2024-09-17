@@ -2,15 +2,23 @@ package soeldi.hub.soeldihub;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import soeldi.hub.soeldihub.model.DatabaseService;
 import soeldi.hub.soeldihub.model.entities.Session;
 import soeldi.hub.soeldihub.model.entities.User;
 
+import java.net.URL;
+import java.util.Collection;
+import java.util.Optional;
+
+import static soeldi.hub.soeldihub.utils.FlowPaneCreator.addStyleClassAndToChildren;
 import static soeldi.hub.soeldihub.utils.FlowPaneCreator.createFlowView;
 
 public class SoeldiHubApplicationController {
@@ -27,27 +35,48 @@ public class SoeldiHubApplicationController {
     private VBox flowsVbox;
     @FXML
     private VBox contentVbox;
+    @FXML
+    private HBox refreshButtonHBox;
 
     @FXML
     void initialize() {
         //TODO replace with real implementation
         DatabaseService.getInstance()
                 .findUser("soeldi", "soeldispassword")
-                .map(this::createFriendsNode)
+                .flatMap(this::createFriendsNode)
                 .ifPresent(friendsVbox.getChildren()::add);
         DatabaseService.getInstance()
                 .findUser("sophie", "sophiespassword")
-                .map(this::createFriendsNode)
+                .flatMap(this::createFriendsNode)
                 .ifPresent(friendsVbox.getChildren()::add);
 
+        initializeRefreshButton();
         Session.getInstance().map(Session::getUsername).ifPresent(usernameProfileLabel::setText);
         fillContentWithLatestFlows();
     }
 
-    private Node createFriendsNode(final User user) {
-        final Label usernameLabel = new Label(user.username());
-        final VBox vBox = new VBox(usernameLabel);
-        return new HBox(vBox);
+    private void initializeRefreshButton() {
+        final URL imageUrl = SoeldiHubApplication.class.getResource("icons/RefreshIcon.png");
+        Optional.ofNullable(imageUrl)
+                .map(URL::toString)
+                .map(Image::new)
+                .map(ImageView::new)
+                .map(iv -> {
+                    iv.setFitWidth(20);
+                    iv.setFitHeight(20);
+                    return iv;
+                })
+                .map(StackPane::new)
+                .flatMap(sp -> addStyleClassAndToChildren(sp, refreshButtonHBox, "refresh-button"))
+                .ifPresent(sp -> sp.setOnMouseClicked(this::reloadFlows));
+    }
+
+    private Optional<HBox> createFriendsNode(final User user) {
+        return Optional.ofNullable(user)
+                .map(User::username)
+                .map(Label::new)
+                .map(VBox::new)
+                .map(HBox::new);
     }
 
     @FXML
@@ -66,11 +95,18 @@ public class SoeldiHubApplicationController {
     }
 
     private void fillContentWithLatestFlows() {
-        DatabaseService.getInstance().findLatestFlows().ifPresent(
-                flows -> flows.forEach(
-                        optFlow -> optFlow.
-                                map(flow -> flowsVbox.getChildren().add(createFlowView(flow, contentVbox)))
-                )
-        );
+        DatabaseService.getInstance()
+                .findLatestFlows()
+                .map(Collection::stream)
+                .map(stream -> stream.flatMap(Optional::stream))
+                .ifPresent(
+                      stream -> stream.forEach(flow -> flowsVbox.getChildren().add(createFlowView(flow, contentVbox)))
+                );
+    }
+
+    @FXML
+    private void reloadFlows(final MouseEvent mouseEvent) {
+        flowsVbox.getChildren().clear();
+        fillContentWithLatestFlows();
     }
 }

@@ -1,7 +1,11 @@
 * {
-    -fx-background-color: #121212;
+    -fx-background-color: inherit;
     -fx-text-fill: #eeeeee;
     -fx-prompt-text-fill: #eeeeee;
+}
+
+.background {
+    -fx-background-color: #151515;
 }
 
 .top-bar {
@@ -20,20 +24,17 @@
     -fx-padding: 20;
     -fx-pref-width: 220;
     -fx-background-radius: 8 0 0 0;
-}
-
-.friends-vbox * {
-    -fx-background-color: inherit;
+    -fx-background-color: #121212;
 }
 
 .menu-vbox {
     -fx-padding: 20;
     -fx-pref-width: 220;
     -fx-background-radius: 0 8 0 0;
+    -fx-background-color: #121212;
 }
 .menu-vbox > * {
     -fx-padding: 12;
-    -fx-background-color: inherit;
 }
 
 .content-vbox {
@@ -202,4 +203,22 @@
     -fx-font-size: 10;
     -fx-text-fill: #ababab;
     -fx-background-color: transparent;
+}
+
+.refresh-button {
+    -fx-cursor: hand;
+    -fx-background-color: #151515;
+    -fx-background-radius: 12;
+    -fx-padding: 2 8;
+    -fx-animated: 2s;
+}
+
+.refresh-button image-view {
+    -fx-fit-to-width: 20;
+    -fx-fit-to-height: 20;
+}
+
+.refresh-button:hover {
+    -fx-cursor: hand;
+    -fx-background-color: #21212188;
 }

@@ -4,7 +4,8 @@
 <?import javafx.scene.layout.*?>
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
-      fx:controller="soeldi.hub.soeldihub.SoeldiHubApplicationController">
+      fx:controller="soeldi.hub.soeldihub.SoeldiHubApplicationController"
+      styleClass="background">
     <HBox styleClass="top-bar">
         <HBox HBox.hgrow="ALWAYS">
             <Label style="-fx-padding: 1 2; -fx-background-color: #454ADE; -fx-background-radius: 4 0 0 4;" styleClass="h1" text="Soeldi" />
@@ -30,8 +31,12 @@
         </VBox>
         <VBox fx:id="contentVbox" HBox.hgrow="ALWAYS" alignment="TOP_CENTER" styleClass="content-vbox" spacing="8">
             <HBox spacing="2" styleClass="flows-title-hbox">
-                <Label text="Flows" styleClass="h1"/>
-                <Label text="new" styleClass="recommended"/>
+                <HBox HBox.hgrow="ALWAYS">
+                    <Label text="Flows" styleClass="h1"/>
+                    <Label text="new" styleClass="recommended"/>
+                </HBox>
+                <HBox fx:id="refreshButtonHBox" HBox.hgrow="NEVER" alignment="CENTER_RIGHT">
+                </HBox>
             </HBox>
             <ScrollPane fx:id="flowContainer" fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="NEVER" styleClass="flows-scroll-pane">
                 <VBox fx:id="flowsVbox" spacing="56" alignment="TOP_CENTER" styleClass="flows-vbox"/>
