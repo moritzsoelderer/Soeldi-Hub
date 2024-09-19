@@ -15,7 +15,6 @@ import soeldi.hub.soeldihub.model.entities.Session;
 import soeldi.hub.soeldihub.model.entities.User;
 
 import java.net.URL;
-import java.util.Collection;
 import java.util.Optional;
 
 import static soeldi.hub.soeldihub.utils.FlowPaneCreator.addStyleClassAndToChildren;
@@ -97,10 +96,8 @@ public class SoeldiHubApplicationController {
     private void fillContentWithLatestFlows() {
         DatabaseService.getInstance()
                 .findLatestFlows()
-                .map(Collection::stream)
-                .map(stream -> stream.flatMap(Optional::stream))
                 .ifPresent(
-                      stream -> stream.forEach(flow -> flowsVbox.getChildren().add(createFlowView(flow, contentVbox)))
+                      list -> list.forEach(flow -> flowsVbox.getChildren().add(createFlowView(flow, contentVbox)))
                 );
     }
 

@@ -1,5 +1,6 @@
 package soeldi.hub.soeldihub.model;
 
+import soeldi.hub.soeldihub.model.entities.Comment;
 import soeldi.hub.soeldihub.model.entities.Flow;
 import soeldi.hub.soeldihub.model.entities.Like;
 import soeldi.hub.soeldihub.model.entities.User;
@@ -134,6 +135,43 @@ public class DatabaseRepository {
 
             return Optional.of(pstmt.executeUpdate());
         } catch (SQLException e) {
+            return Optional.empty();
+        }
+    }
+
+    public Optional<Comment> fetchComment(final int id) {
+        return Optional.of(id)
+                .flatMap(i -> fetchById("COMMENT", i, DatabaseMapper::mapToComment));
+    }
+
+    public Optional<Comment> fetchCommentByFlowId(final int flowId) {
+        final String query = "SELECT * FROM comment AS t WHERE t.flow_id = ?" ;
+        try(final PreparedStatement pstmt = DriverManager.getConnection(databaseUrl, databaseUser, databasePassword)
+                .prepareStatement(query)) {
+            pstmt.setInt(1, flowId);
+
+            return Optional.of(pstmt.executeQuery())
+                    .filter(DatabaseRepository::nextOrFalse)
+                    .flatMap(DatabaseMapper::mapToComment);
+        }
+        catch (SQLException e) {
+            Logger.getAnonymousLogger().log(Level.SEVERE, e.getMessage());
+            return Optional.empty();
+        }
+    }
+
+    public Optional<List<Optional<Comment>>> fetchLatestCommentsByFlowId(final int flowId, final int limit) {
+        final String query = "SELECT * FROM comment AS t WHERE t.flow_id = ? ORDER BY created_at DESC LIMIT ?" ;
+        try(final PreparedStatement pstmt = DriverManager.getConnection(databaseUrl, databaseUser, databasePassword)
+                .prepareStatement(query)) {
+            pstmt.setInt(1, flowId);
+            pstmt.setInt(2, limit);
+
+            return Optional.of(pstmt.executeQuery())
+                    .map(resultSet -> whileHasNextDo(resultSet, DatabaseMapper::mapToComment));
+        }
+        catch (SQLException e) {
+            Logger.getAnonymousLogger().log(Level.SEVERE, e.getMessage());
             return Optional.empty();
         }
     }

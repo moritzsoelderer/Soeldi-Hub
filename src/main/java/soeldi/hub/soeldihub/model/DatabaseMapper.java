@@ -1,6 +1,7 @@
 package soeldi.hub.soeldihub.model;
 
 import soeldi.hub.soeldihub.SoeldiHubApplication;
+import soeldi.hub.soeldihub.model.entities.Comment;
 import soeldi.hub.soeldihub.model.entities.Flow;
 import soeldi.hub.soeldihub.model.entities.Like;
 import soeldi.hub.soeldihub.model.entities.User;
@@ -89,6 +90,22 @@ public class DatabaseMapper {
     public static Optional<Integer> mapToCount(final ResultSet resultSet) {
         try{
             return Optional.of(resultSet.getInt("count"));
+        } catch (SQLException e) {
+            return Optional.empty();
+        }
+    }
+
+    public static Optional<Comment> mapToComment(final ResultSet resultSet) {
+        try{
+            return Optional.of(
+                    new Comment(
+                            Optional.of(resultSet.getInt("id")),
+                            resultSet.getInt("user_id"),
+                            resultSet.getInt("flow_id"),
+                            resultSet.getString("text"),
+                            Optional.of(resultSet.getTimestamp("created_at").toInstant())
+                    )
+            );
         } catch (SQLException e) {
             return Optional.empty();
         }
