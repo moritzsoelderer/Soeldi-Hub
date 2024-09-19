@@ -1,11 +1,14 @@
 package soeldi.hub.soeldihub.model;
 
+import soeldi.hub.soeldihub.model.entities.Comment;
 import soeldi.hub.soeldihub.model.entities.Flow;
 import soeldi.hub.soeldihub.model.entities.Like;
 import soeldi.hub.soeldihub.model.entities.User;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 public class DatabaseService {
 
@@ -47,8 +50,11 @@ public class DatabaseService {
                 .flatMap(repository::fetchFlow);
     }
 
-    public Optional<List<Optional<Flow>>> findLatestFlows() {
-        return repository.fetchLatestFlows();
+    public Optional<List<Flow>> findLatestFlows() {
+        return repository.fetchLatestFlows()
+                .map(Collection::stream)
+                .map(stream -> stream.flatMap(Optional::stream))
+                .map(Stream::toList);
     }
 
     public Optional<Like> findLike(final int id) {
@@ -70,5 +76,25 @@ public class DatabaseService {
     public Optional<Boolean> createLike(final int userId, final int flowId) {
         return repository.insertLike(userId, flowId).map(i -> i == 1);
     }
+
+    public Optional<Comment> findComment(final int id) {
+        return repository.fetchComment(id);
+    }
+
+    public Optional<Comment> findCommentByFlowId(final int flowId) {
+        return repository.fetchCommentByFlowId(flowId);
+    }
+
+    public Optional<List<Comment>> findLatestCommentsByFlowId(final int flowId) {
+        return this.findLatestCommentsByFlowId(flowId, 25);
+    }
+
+    public Optional<List<Comment>> findLatestCommentsByFlowId(final int flowId, final int limit) {
+        return repository.fetchLatestCommentsByFlowId(flowId, limit)
+                .map(Collection::stream)
+                .map(stream -> stream.flatMap(Optional::stream))
+                .map(Stream::toList);
+    }
+
 
 }

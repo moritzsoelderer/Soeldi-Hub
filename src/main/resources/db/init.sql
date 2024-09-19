@@ -43,3 +43,16 @@ CREATE TABLE user_likes_flow(
 INSERT INTO user_likes_flow (user_id, flow_id) VALUES(2, 1);
 INSERT INTO user_likes_flow (user_id, flow_id) VALUES(3, 1);
 INSERT INTO user_likes_flow (user_id, flow_id) VALUES(1, 2);
+
+CREATE TABLE comment(
+    id int auto_increment PRIMARY KEY,
+    user_id int,
+    flow_id int,
+    created_at timestamp default CURRENT_TIMESTAMP,
+    text VARCHAR(500),
+    FOREIGN KEY (user_id) REFERENCES user(id),
+    FOREIGN KEY (flow_id) REFERENCES flow(id)
+);
+
+INSERT INTO comment (user_id, flow_id, text)  VALUES (1, 1, 'Hi here test comment');
+INSERT INTO comment (user_id, flow_id, text)  VALUES (2, 1, 'Hi here test comment 2');
