@@ -2,7 +2,9 @@ package soeldi.hub.soeldihub.utils;
 
 import javafx.event.Event;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
@@ -12,17 +14,54 @@ import javafx.scene.media.MediaView;
 import javafx.scene.shape.Rectangle;
 import soeldi.hub.soeldihub.SoeldiHubApplication;
 import soeldi.hub.soeldihub.model.DatabaseService;
+import soeldi.hub.soeldihub.model.entities.Comment;
 import soeldi.hub.soeldihub.model.entities.Flow;
 import soeldi.hub.soeldihub.model.entities.Session;
+import soeldi.hub.soeldihub.model.entities.User;
 
 import java.io.InputStream;
 import java.net.URL;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.List;
 import java.util.Optional;
 
+
+//TODO make an own Pane out of it
 public class FlowPaneCreator {
+
+    private static Rectangle createRectangle(final double arcWidth, final double arcHeight) {
+        final Rectangle rectangle = new Rectangle();
+        rectangle.setArcHeight(arcWidth);
+        rectangle.setArcWidth(arcHeight);
+        return rectangle;
+    }
+
+    private static VBox createCommentButtonVbox(final int flowId, final int comments, final Pane parent) {
+        final Label label = new Label(String.valueOf(comments));
+        label.getStyleClass().add("like-label");
+
+        final InputStream commentIcon = SoeldiHubApplication.class.getResourceAsStream("icons/LikeIcon.png");
+        final ImageView imageView = new ImageView(new Image(commentIcon));
+        final StackPane imageViewParent = new StackPane(imageView);
+        imageViewParent.setMaxHeight(30);
+        imageViewParent.setMaxWidth(30);
+        imageViewParent.setStyle("-fx-background-color: transparent");
+        imageView.fitHeightProperty().bind(imageViewParent.maxHeightProperty());
+        imageView.fitWidthProperty().bind(imageViewParent.maxWidthProperty());
+
+        imageViewParent.getStyleClass().add("like-button");
+        imageViewParent.setOnMouseClicked(e -> {
+            final List<Comment> commentList = DatabaseService.getInstance().findLatestCommentsByFlowId(flowId).orElseThrow();
+            parent.getChildren().clear();
+            parent.getChildren().add(createFlowCommentSection(commentList, parent));
+        });
+
+        final VBox vBox = new VBox(imageViewParent, label);
+        vBox.getStyleClass().add("like-vbox");
+        return vBox;
+    }
 
     public static StackPane createFlowView(final Flow flow, final Region parentRegion) {
         final double parentHeightRatio = 0.75;
@@ -33,23 +72,30 @@ public class FlowPaneCreator {
 
         final StackPane parentStackPane = new StackPane();
         final Optional<MediaView> mediaView = createFlowMediaView(flow, parentStackPane);
-        final Optional<VBox> likeButtonVbox = Optional.of(flow)
+        final VBox actionVBox = new VBox();
+        Optional.of(flow)
                 .flatMap(Flow::id)
-                .map(id -> createLikeButtonVbox(id, flow.likes().orElse(0), isLikedByUser));
+                .map(id -> createLikeButtonVbox(id, flow.likes().orElse(0), isLikedByUser))
+                .ifPresent(vbox -> actionVBox.getChildren().add(vbox));
+        Optional.of(flow)
+                .flatMap(Flow::id)
+                .map(id -> createCommentButtonVbox(id, flow.comments().orElse(0)))
+                .ifPresent(vbox -> actionVBox.getChildren().add(vbox));
         final Optional<VBox> flowInfoVbox = Optional.of(flow)
                 .flatMap(Flow::uploadedAt)
                 .map(uploadedAt -> createFlowInfoVbox(username, flow.title(), flow.caption(), uploadedAt));
-        final Rectangle rectangle = new Rectangle();
         final HBox flowHbox = new HBox();
         final VBox flowVbox = new VBox();
 
-        rectangle.setArcHeight(40);
-        rectangle.setArcWidth(40);
         flowHbox.getStyleClass().add("flow-container-hbox");
         flowVbox.getStyleClass().add("flow-container-vbox");
 
+        //clip rectangle
+        final Rectangle rectangle = createRectangle(60, 60);
         rectangle.heightProperty().bind(parentRegion.heightProperty().multiply(parentHeightRatio));
         rectangle.widthProperty().bind(parentStackPane.widthProperty());
+        parentStackPane.setClip(rectangle);
+
         parentStackPane.maxWidthProperty()
                 .bind(parentRegion.heightProperty().multiply(parentHeightRatio * nineToSixteenRatio));
         parentStackPane.maxHeightProperty()
@@ -60,15 +106,18 @@ public class FlowPaneCreator {
             flowHbox.getChildren().add(infobox);
             HBox.setHgrow(infobox, Priority.SOMETIMES);
         });
-        likeButtonVbox.ifPresent(likebox -> {
-            flowHbox.getChildren().add(likebox);
-            HBox.setHgrow(likebox, Priority.NEVER);
-        });
+        flowHbox.getChildren().add(actionVBox);
+        HBox.setHgrow(actionVBox, Priority.NEVER);
+
+
+        //test
+        final List<Comment> comments = DatabaseService.getInstance().findLatestCommentsByFlowId(flow.id().orElseThrow()).orElseThrow();
+        final VBox commentSectionVbox = createFlowCommentSection(comments, flowVbox);
+        flowVbox.getChildren().add(commentSectionVbox);
 
         mediaView.ifPresent(view -> parentStackPane.getChildren().add(view));
         parentStackPane.getChildren().add(flowVbox);
-        flowVbox.getChildren().add(flowHbox);
-        parentStackPane.setClip(rectangle);
+        //flowVbox.getChildren().add(flowHbox);
         return parentStackPane;
     }
 
@@ -136,7 +185,7 @@ public class FlowPaneCreator {
         return vBox;
     }
 
-    public static Optional<Label> createFlowCaption(final String caption) {
+    private static Optional<Label> createFlowCaption(final String caption) {
         final String captionStyle = "flow-caption-label";
         return Optional.ofNullable(caption)
                 .map(Label::new)
@@ -146,6 +195,55 @@ public class FlowPaneCreator {
                         return label;
                     }
                 );
+    }
+
+    public static VBox createFlowCommentSection(final List<Comment> comments, final Pane parentPane) {
+        final Label commentLabel = new Label("Comments");
+        final Button closeSectionButton = new Button("close");
+        final HBox commentLabelHbox = new HBox(commentLabel, closeSectionButton);
+        final VBox scrollPaneChildVbox = new VBox();
+        final ScrollPane scrollPane = new ScrollPane(scrollPaneChildVbox);
+        final VBox commentsVbox = new VBox(commentLabelHbox, scrollPane);
+
+        closeSectionButton.setOnAction(e -> parentPane.getChildren().remove(commentsVbox));
+        commentsVbox.getStyleClass().add("comment-section");
+        commentLabel.getStyleClass().add("comment-title-label");
+        scrollPane.setFitToWidth(true);
+        HBox.setHgrow(commentLabel, Priority.ALWAYS);
+        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        scrollPane.maxHeightProperty().bind(parentPane.heightProperty().multiply(.35));
+
+        comments.stream()
+                .map(FlowPaneCreator::createFlowComment)
+                .flatMap(Optional::stream)
+                .forEach(vBox -> scrollPaneChildVbox.getChildren().add(vBox));
+        return commentsVbox;
+    }
+
+    public static Optional<VBox> createFlowComment(final Comment comment) {
+        final VBox commentVbox = new VBox();
+        commentVbox.getStyleClass().add("comment");
+
+        HBox.setHgrow(commentVbox, Priority.ALWAYS);
+        Optional.ofNullable(comment)
+                .map(Comment::commentedBy)
+                .flatMap(id -> DatabaseService.getInstance().findUser(id))
+                .map(User::username)
+                .map(Label::new)
+                .ifPresent(l -> addStyleClassAndToChildren(l, commentVbox, "comment-user-label"));
+        Optional.ofNullable(comment)
+                .map(Comment::text)
+                .map(Label::new)
+                .ifPresent(l -> addStyleClassAndToChildren(l, commentVbox, "comment-text-label"));
+        Optional.ofNullable(comment)
+                .flatMap(Comment::createdAt)
+                .map(instant -> LocalDate.ofInstant(instant, ZoneId.systemDefault()))
+                .map(LocalDate::toString)
+                .map(Label::new)
+                .ifPresent(l -> addStyleClassAndToChildren(l, commentVbox, "comment-created-at"));
+        return Optional.of(commentVbox)
+                .filter(b -> !b.getChildren().isEmpty());
     }
 
     //TODO maybe implement a idempotent styleclass.add() method

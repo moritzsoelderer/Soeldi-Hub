@@ -64,7 +64,8 @@ public class DatabaseMapper {
                             SoeldiHubApplication.class.getResource(
                                     RELATIVE_PATH_TO_CONTENT + "flows/" + resultSet.getString("source")
                                     ),
-                            Optional.of(resultSet.getInt("count"))
+                            Optional.of(resultSet.getInt("likeCount")),
+                            Optional.of(resultSet.getInt("commentCount"))
                     )
             );
         } catch (SQLException e) {

@@ -12,7 +12,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -81,7 +80,12 @@ public class DatabaseRepository {
     Returns the latest 25 flows
      **/
     public Optional<List<Optional<Flow>>> fetchLatestFlows() {
-        final String flowQuery = "SELECT * FROM flow LEFT JOIN (SELECT flow_id, COUNT(*) AS count FROM user_likes_flow GROUP BY flow_id) AS likes ON likes.flow_id = flow.id ORDER BY flow.uploaded_at DESC LIMIT 25" ;
+        final String flowQuery = "SELECT * FROM flow LEFT JOIN " +
+                "((SELECT flow_id, COUNT(*) AS likeCount FROM user_likes_flow GROUP BY flow_id) AS likes JOIN " +
+                "(SELECT flow_id AS commentFlowId, COUNT(*) AS commentCount FROM user_likes_flow GROUP BY flow_id) " +
+                "AS comments ON likes.flow_id = commentFlowId) AS likes_and_comments " +
+                "ON likes_and_comments.flow_id = flow.id " +
+                "ORDER BY flow.uploaded_at DESC LIMIT 25" ;
         try(final PreparedStatement pstmt = DriverManager.getConnection(databaseUrl, databaseUser, databasePassword)
                 .prepareStatement(flowQuery)) {
 

@@ -49,10 +49,16 @@ CREATE TABLE comment(
     user_id int,
     flow_id int,
     created_at timestamp default CURRENT_TIMESTAMP,
-    text VARCHAR(500),
+    text VARCHAR(320),
     FOREIGN KEY (user_id) REFERENCES user(id),
     FOREIGN KEY (flow_id) REFERENCES flow(id)
 );
 
 INSERT INTO comment (user_id, flow_id, text)  VALUES (1, 1, 'Hi here test comment');
 INSERT INTO comment (user_id, flow_id, text)  VALUES (2, 1, 'Hi here test comment 2');
+INSERT INTO comment (user_id, flow_id, text)  VALUES (3, 1, 'Hi here I am');
+INSERT INTO comment (user_id, flow_id, text)  VALUES (2, 1, 'thats crazy');
+INSERT INTO comment (user_id, flow_id, text)  VALUES (3, 1, 'Look at me!');
+INSERT INTO comment (user_id, flow_id, text)  VALUES (1, 1, 'Hi here I am 2');
+INSERT INTO comment (user_id, flow_id, text)  VALUES (2, 1, 'thats crazy 2');
+INSERT INTO comment (user_id, flow_id, text)  VALUES (2, 1, 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit am');

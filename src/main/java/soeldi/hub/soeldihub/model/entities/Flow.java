@@ -11,7 +11,8 @@ public record Flow(
         int uploadedBy,
         String caption,
         URL source,
-        Optional<Integer> likes
+        Optional<Integer> likes,
+        Optional<Integer> comments
 ) {
     public static Flow newFlow(final String title, final int uploadedById, final URL source){
         return new Flow(
@@ -21,6 +22,7 @@ public record Flow(
                 uploadedById,
                 "",
                 source,
+                Optional.empty(),
                 Optional.empty()
         );
     }
@@ -33,6 +35,7 @@ public record Flow(
                 uploadedById,
                 caption,
                 source,
+                Optional.empty(),
                 Optional.empty()
         );
     }
